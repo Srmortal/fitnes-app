@@ -11,10 +11,11 @@ import com.example.fitnesapp.data.datasource.local.dao.WorkoutSessionDao
 import com.example.fitnesapp.data.model.entity.ExerciseEntity
 import com.example.fitnesapp.data.model.entity.WeeklyProgressEntity
 import com.example.fitnesapp.data.model.entity.WorkoutSessionEntity
+import javax.inject.Provider
 
 @Database(
     entities = [ExerciseEntity::class, WorkoutSessionEntity::class, WeeklyProgressEntity::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -25,26 +26,45 @@ abstract class FitnessDatabase: RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "fitness_db"
+        @Volatile
+        private var INSTANCE: FitnessDatabase? = null
+        private fun buildDatabase(context: Context): FitnessDatabase {
+            // 1. Declare a variable that will hold the database instance later.
+            lateinit var database: FitnessDatabase
 
-        fun buildDatabase(context: Context): FitnessDatabase {
-            return Room.databaseBuilder(
-                context,
+            // 2. Create a Provider. This is like a "promise" to provide the DAO.
+            //    The code inside the braces is NOT run now. It only runs when .get() is called.
+            val exerciseDaoProvider = Provider { database.exerciseDao() }
+            val workoutSessionDaoProvider = Provider { database.workoutSessionDao() }
+            val weeklyProgressDaoProvider = Provider { database.weeklyProgressDao() }
+
+            // 3. Build the database instance and add the callback.
+            database = Room.databaseBuilder(
+                context.applicationContext,
                 FitnessDatabase::class.java,
                 DATABASE_NAME
-            ).build()
+            )
+                // Pass the provider to the callback. This is safe.
+                .addCallback(DatabaseCallback(
+                    exerciseDaoProvider = exerciseDaoProvider,
+                    weeklyProgressDaoProvider = weeklyProgressDaoProvider,
+                ))
+                // Use this to prevent crashes during development if you change the DB schema.
+                .fallbackToDestructiveMigration(false)
+                .build()
+
+            // 4. Return the fully initialized database instance.
+            return database
         }
 
         fun destroyInstance() {
             INSTANCE = null
         }
 
-        private var INSTANCE: FitnessDatabase? = null
-
         fun getInstance(context: Context): FitnessDatabase {
-            if (INSTANCE == null) {
-                INSTANCE = buildDatabase(context)
+            return INSTANCE ?: synchronized(this) {
+                buildDatabase(context).also { INSTANCE = it }
             }
-            return INSTANCE!!
         }
     }
 }

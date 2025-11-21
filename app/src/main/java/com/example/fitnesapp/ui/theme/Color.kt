@@ -7,6 +7,8 @@ val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 
 val Purple40 = Color(0xFF6650a4)
+
+val Purple500 = Color(0xFF6200EE)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
@@ -18,14 +20,16 @@ val Blue500 = Color(0xFF2676ff)
 val Blue200 = Color(0xFF90caf9)
 val Blue100 = Color(0xFFdbeafe)
 
-val LightBlue = Color(0x4DFFFFFF)
+val LightBlue = Color(0x41FFFFFF)
+
+val TransparentBlue = Color(0x452196F3)
 
 val Red600 = Color(0xFFe53935)
 val Red100 = Color(0xFFffe2e2)
 
 val Green600 = Color(0xFF00a63e)
+val GreenDisabled = Color(0xC9A3E0A5)
 val Green100 = Color(0xFFe2f9ea)
 
 val Gray600 = Color(0xFF808080)
-
 val Gray100 = Color(0xFFf3f4f6)

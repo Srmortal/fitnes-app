@@ -12,14 +12,14 @@ data class WorkoutSessionEntity(
     val title: String,
     val description: String,
     val duration: Int,
-    val exercises: Int
+    val exercises: List<Int>
 )
 
 data class Contains(
-    @Embedded val exercise: List<ExerciseEntity>,
+    @Embedded val workoutSessionEntity: WorkoutSessionEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "exerciseId"
     )
-    val workoutSessionEntity: WorkoutSessionEntity
+    val exercise: List<ExerciseEntity>,
 )
